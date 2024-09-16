@@ -5,14 +5,14 @@ interface ICachedData {
   username?: string;
   password?: string;
   searchPath?: string;
+  recrusive?: string; // true, false
   searchPathList?: string[];
   cacheFileList?: FileStat[];
 }
 let cachedData: ICachedData = {};
 
 function getClient() {
-  const { url, username, password, searchPath } =
-    env?.getUserVariables?.() ?? {};
+  const { url, username, password, searchPath, recrusive } = env?.getUserVariables?.() ?? {};
   if (!(url && username && password)) {
     return null;
   }
@@ -22,6 +22,7 @@ function getClient() {
       cachedData.url === url &&
       cachedData.username === username &&
       cachedData.password === password &&
+      cachedData.recrusive === recrusive &&
       cachedData.searchPath === searchPath
     )
   ) {
@@ -29,6 +30,7 @@ function getClient() {
     cachedData.username = username;
     cachedData.password = password;
     cachedData.searchPath = searchPath;
+    cachedData.recrusive = recrusive;
     cachedData.searchPathList = searchPath?.split?.(",");
     cachedData.cacheFileList = null;
   }
@@ -43,15 +45,13 @@ function getClient() {
 async function searchMusic(query: string) {
   const client = getClient();
   if (!cachedData.cacheFileList) {
-    const searchPathList = cachedData.searchPathList?.length
-      ? cachedData.searchPathList
-      : ["/"];
+    const searchPathList = cachedData.searchPathList?.length ? cachedData.searchPathList : ["/"];
     let result: FileStat[] = [];
 
     for (let search of searchPathList) {
       try {
         const fileItems = (
-          (await client.getDirectoryContents(search)) as FileStat[]
+          (await client.getDirectoryContents(search, { deep: cachedData.recrusive === "true", glob: "/**/*.{mp3}" })) as FileStat[]
         ).filter((it) => it.type === "file" && it.mime.startsWith("audio"));
         result = [...result, ...fileItems];
       } catch {}
@@ -87,7 +87,7 @@ async function getTopLists() {
 async function getTopListDetail(topListItem: IMusicSheet.IMusicSheetItem) {
   const client = getClient();
   const fileItems = (
-    (await client.getDirectoryContents(topListItem.id)) as FileStat[]
+    (await client.getDirectoryContents(topListItem.id, { deep: cachedData.recrusive === "true", glob: "/**/*.{mp3}" })) as FileStat[]
   ).filter((it) => it.type === "file" && it.mime.startsWith("audio"));
 
   return {
@@ -122,11 +122,14 @@ module.exports = {
       key: "searchPath",
       name: "存放歌曲的路径",
     },
+    {
+      key: "recrusive",
+      name: "是否递归查找音乐文件(需要webdav服务器支持)",
+    },
   ],
-  version: "0.0.2",
+  version: "0.0.3",
   supportedSearchType: ["music"],
-  srcUrl:
-    "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/webdav/index.js",
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/webdav/index.js",
   cacheControl: "no-cache",
   search(query, page, type) {
     if (type === "music") {

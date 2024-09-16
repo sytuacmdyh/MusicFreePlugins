@@ -5,8 +5,8 @@
   "main": "dist/plugin.js",
   "scripts": {
     "serve": "http-server .",
-    "build": "tsc & node ./scripts/generate.js",
-    "publish": "git checkout master & git merge v0.1 & git push & git checkout v0.1 & git push",
+    "build": "tsc && node ./scripts/generate.js",
+    "test-jellyfin": "ts-node -T ./plugins/jellyfin/index.ts",
     "test-kugou": "ts-node -T ./plugins/kugou/index.ts",
     "test-navidrome": "ts-node -T ./plugins/navidrome/index.ts",
     "test-audiomack": "ts-node -T ./plugins/audiomack/index.ts",
@@ -48,6 +48,6 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "webdav": "^5.3.1"
+    "webdav": "^5.7.1"
   }
 }

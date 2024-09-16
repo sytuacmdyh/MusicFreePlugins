@@ -4,18 +4,20 @@ const webdav_1 = require("webdav");
 let cachedData = {};
 function getClient() {
     var _a, _b, _c;
-    const { url, username, password, searchPath } = (_b = (_a = env === null || env === void 0 ? void 0 : env.getUserVariables) === null || _a === void 0 ? void 0 : _a.call(env)) !== null && _b !== void 0 ? _b : {};
+    const { url, username, password, searchPath, recrusive } = (_b = (_a = env === null || env === void 0 ? void 0 : env.getUserVariables) === null || _a === void 0 ? void 0 : _a.call(env)) !== null && _b !== void 0 ? _b : {};
     if (!(url && username && password)) {
         return null;
     }
     if (!(cachedData.url === url &&
         cachedData.username === username &&
         cachedData.password === password &&
+        cachedData.recrusive === recrusive &&
         cachedData.searchPath === searchPath)) {
         cachedData.url = url;
         cachedData.username = username;
         cachedData.password = password;
         cachedData.searchPath = searchPath;
+        cachedData.recrusive = recrusive;
         cachedData.searchPathList = (_c = searchPath === null || searchPath === void 0 ? void 0 : searchPath.split) === null || _c === void 0 ? void 0 : _c.call(searchPath, ",");
         cachedData.cacheFileList = null;
     }
@@ -29,13 +31,11 @@ async function searchMusic(query) {
     var _a, _b;
     const client = getClient();
     if (!cachedData.cacheFileList) {
-        const searchPathList = ((_a = cachedData.searchPathList) === null || _a === void 0 ? void 0 : _a.length)
-            ? cachedData.searchPathList
-            : ["/"];
+        const searchPathList = ((_a = cachedData.searchPathList) === null || _a === void 0 ? void 0 : _a.length) ? cachedData.searchPathList : ["/"];
         let result = [];
         for (let search of searchPathList) {
             try {
-                const fileItems = (await client.getDirectoryContents(search)).filter((it) => it.type === "file" && it.mime.startsWith("audio"));
+                const fileItems = (await client.getDirectoryContents(search, { deep: cachedData.recrusive === "true", glob: "/**/*.{mp3}" })).filter((it) => it.type === "file" && it.mime.startsWith("audio"));
                 result = [...result, ...fileItems];
             }
             catch (_c) { }
@@ -67,7 +67,7 @@ async function getTopLists() {
 }
 async function getTopListDetail(topListItem) {
     const client = getClient();
-    const fileItems = (await client.getDirectoryContents(topListItem.id)).filter((it) => it.type === "file" && it.mime.startsWith("audio"));
+    const fileItems = (await client.getDirectoryContents(topListItem.id, { deep: cachedData.recrusive === "true", glob: "/**/*.{mp3}" })).filter((it) => it.type === "file" && it.mime.startsWith("audio"));
     return {
         musicList: fileItems.map((it) => ({
             title: it.basename,
@@ -78,43 +78,47 @@ async function getTopListDetail(topListItem) {
     };
 }
 module.exports = {
-    platform: "WebDAV",
-    author: "猫头猫",
-    description: "使用此插件前先配置用户变量",
-    userVariables: [
-        {
-            key: "url",
-            name: "WebDAV地址",
-        },
-        {
-            key: "username",
-            name: "用户名",
-        },
-        {
-            key: "password",
-            name: "密码",
-            type: "password",
-        },
-        {
-            key: "searchPath",
-            name: "存放歌曲的路径",
-        },
-    ],
-    version: "0.0.2",
-    supportedSearchType: ["music"],
-    srcUrl: "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/webdav/index.js",
-    cacheControl: "no-cache",
-    search(query, page, type) {
-        if (type === "music") {
-            return searchMusic(query);
-        }
+  platform: "WebDAV",
+  author: "猫头猫",
+  description: "使用此插件前先配置用户变量",
+  userVariables: [
+    {
+      key: "url",
+      name: "WebDAV地址",
     },
-    getTopLists,
-    getTopListDetail,
-    getMediaSource(musicItem) {
-        const client = getClient();
-        return {
-            url: client.getFileDownloadLink(musicItem.id),
-        };
+    {
+      key: "username",
+      name: "用户名",
     },
+    {
+      key: "password",
+      name: "密码",
+      type: "password",
+    },
+    {
+      key: "searchPath",
+      name: "存放歌曲的路径",
+    },
+    {
+      key: "recrusive",
+      name: "是否递归查找音乐文件(需要webdav服务器支持)",
+    },
+  ],
+  version: "0.0.3",
+  supportedSearchType: ["music"],
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/webdav/index.js",
+  cacheControl: "no-cache",
+  search(query, page, type) {
+    if (type === "music") {
+      return searchMusic(query);
+    }
+  },
+  getTopLists,
+  getTopListDetail,
+  getMediaSource(musicItem) {
+    const client = getClient();
+    return {
+      url: client.getFileDownloadLink(musicItem.id),
+    };
+  },
 };

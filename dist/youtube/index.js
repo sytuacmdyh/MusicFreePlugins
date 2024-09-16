@@ -185,12 +185,12 @@ async function getMediaSource(musicItem, quality) {
     };
 }
 module.exports = {
-    platform: "Youtube",
-    author: '猫头猫',
-    version: "0.0.1",
-    supportedSearchType: ["music"],
-    srcUrl: "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/youtube/index.js",
-    cacheControl: "no-cache",
-    search,
-    getMediaSource,
+  platform: "Youtube",
+  author: "猫头猫",
+  version: "0.0.1",
+  supportedSearchType: ["music"],
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/youtube/index.js",
+  cacheControl: "no-cache",
+  search,
+  getMediaSource,
 };

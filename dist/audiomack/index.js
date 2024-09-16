@@ -444,33 +444,30 @@ async function getTopListDetail(topListItem, page = 1) {
     };
 }
 module.exports = {
-    platform: "Audiomack",
-    version: "0.0.2",
-    author: '猫头猫',
-    primaryKey: ["id", "url_slug"],
-    srcUrl: "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/audiomack/index.js",
-    cacheControl: "no-cache",
-    supportedSearchType: ['music', 'album', 'sheet', 'artist'],
-    async search(query, page, type) {
-        if (type === "music") {
-            return await searchMusic(query, page);
-        }
-        else if (type === "album") {
-            return await searchAlbum(query, page);
-        }
-        else if (type === "sheet") {
-            return await searchMusicSheet(query, page);
-        }
-        else if (type === "artist") {
-            return await searchArtist(query, page);
-        }
-    },
-    getMediaSource,
-    getAlbumInfo,
-    getMusicSheetInfo,
-    getArtistWorks,
-    getRecommendSheetTags,
-    getRecommendSheetsByTag,
-    getTopLists,
-    getTopListDetail,
+  platform: "Audiomack",
+  version: "0.0.2",
+  author: "猫头猫",
+  primaryKey: ["id", "url_slug"],
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/audiomack/index.js",
+  cacheControl: "no-cache",
+  supportedSearchType: ["music", "album", "sheet", "artist"],
+  async search(query, page, type) {
+    if (type === "music") {
+      return await searchMusic(query, page);
+    } else if (type === "album") {
+      return await searchAlbum(query, page);
+    } else if (type === "sheet") {
+      return await searchMusicSheet(query, page);
+    } else if (type === "artist") {
+      return await searchArtist(query, page);
+    }
+  },
+  getMediaSource,
+  getAlbumInfo,
+  getMusicSheetInfo,
+  getArtistWorks,
+  getRecommendSheetTags,
+  getRecommendSheetsByTag,
+  getTopLists,
+  getTopListDetail,
 };

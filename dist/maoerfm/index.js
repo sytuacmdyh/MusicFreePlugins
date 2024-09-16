@@ -176,24 +176,24 @@ async function getMusicSheetInfo(sheet, page) {
     };
 }
 module.exports = {
-    platform: "猫耳FM",
-    author: '猫头猫',
-    version: "0.1.4",
-    appVersion: ">0.1.0-alpha.0",
-    srcUrl: "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/maoerfm/index.js",
-    cacheControl: "no-cache",
-    supportedSearchType: ["music", "album",],
-    async search(query, page, type) {
-        if (type === "music") {
-            return await searchMusic(query, page);
-        }
-        if (type === "album") {
-            return await searchAlbum(query, page);
-        }
-    },
-    getMediaSource,
-    getAlbumInfo,
-    getRecommendSheetTags,
-    getRecommendSheetsByTag,
-    getMusicSheetInfo
+  platform: "猫耳FM",
+  author: "猫头猫",
+  version: "0.1.4",
+  appVersion: ">0.1.0-alpha.0",
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/maoerfm/index.js",
+  cacheControl: "no-cache",
+  supportedSearchType: ["music", "album"],
+  async search(query, page, type) {
+    if (type === "music") {
+      return await searchMusic(query, page);
+    }
+    if (type === "album") {
+      return await searchAlbum(query, page);
+    }
+  },
+  getMediaSource,
+  getAlbumInfo,
+  getRecommendSheetTags,
+  getRecommendSheetsByTag,
+  getMusicSheetInfo,
 };

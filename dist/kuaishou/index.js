@@ -138,25 +138,25 @@ async function searchMusic(query, page) {
     };
 }
 module.exports = {
-    platform: "快手",
-    version: "0.0.1",
-    author: '猫头猫',
-    srcUrl: "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/kuaishou/index.js",
-    cacheControl: "no-cache",
-    supportedSearchType: ["music"],
-    async search(query, page, type) {
-        if (type === "music") {
-            return await searchMusic(query, page);
-        }
-    },
-    async getMediaSource(musicItem, quality) {
-        if (!musicItem.manifest) {
-            return;
-        }
-        const adaptationSet = musicItem.manifest.adaptationSet;
-        const representation = adaptationSet[0].representation;
-        return {
-            url: representation[0].url
-        };
-    },
+  platform: "快手",
+  version: "0.0.1",
+  author: "猫头猫",
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/kuaishou/index.js",
+  cacheControl: "no-cache",
+  supportedSearchType: ["music"],
+  async search(query, page, type) {
+    if (type === "music") {
+      return await searchMusic(query, page);
+    }
+  },
+  async getMediaSource(musicItem, quality) {
+    if (!musicItem.manifest) {
+      return;
+    }
+    const adaptationSet = musicItem.manifest.adaptationSet;
+    const representation = adaptationSet[0].representation;
+    return {
+      url: representation[0].url,
+    };
+  },
 };

@@ -144,15 +144,15 @@ async function getLyric(musicItem) {
     };
 }
 module.exports = {
-    platform: "udio",
-    author: "猫头猫",
-    version: "0.0.0",
-    supportedSearchType: ["music"],
-    srcUrl: "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/udio/index.js",
-    cacheControl: "no-cache",
-    search,
-    getMediaSource,
-    getTopListDetail,
-    getTopLists,
-    getLyric
+  platform: "udio",
+  author: "猫头猫",
+  version: "0.0.0",
+  supportedSearchType: ["music"],
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/udio/index.js",
+  cacheControl: "no-cache",
+  search,
+  getMediaSource,
+  getTopListDetail,
+  getTopLists,
+  getLyric,
 };

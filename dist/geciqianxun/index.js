@@ -39,11 +39,11 @@ async function getLyric(musicItem) {
     };
 }
 module.exports = {
-    platform: "歌词千寻",
-    version: "0.0.0",
-    srcUrl: 'https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/geciqianxun/index.js',
-    cacheControl: "no-store",
-    supportedSearchType: ['lyric'],
-    search,
-    getLyric
+  platform: "歌词千寻",
+  version: "0.0.0",
+  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/geciqianxun/index.js",
+  cacheControl: "no-store",
+  supportedSearchType: ["lyric"],
+  search,
+  getLyric,
 };
