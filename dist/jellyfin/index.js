@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
-const pageSize = 20;
 const cachedData = {};
 function getClient() {
     var _a, _b;
@@ -31,7 +30,7 @@ function formatMusicItem(it) {
         },
     };
 }
-async function searchMusic(query, page) {
+async function searchMusic(query, page, size = 100) {
     var _a, _b;
     const client = getClient();
     if (!client) {
@@ -43,24 +42,25 @@ async function searchMusic(query, page) {
             ApiKey: apiKey,
             IncludeItemTypes: "Audio",
             Recursive: true,
-            StartIndex: (page - 1) * pageSize,
+            StartIndex: (page - 1) * size,
             ImageTypeLimit: 1,
             EnableImageTypes: "Primary",
-            Limit: pageSize,
+            Limit: size,
             ParentId: mediaId || null,
             searchTerm: query || null,
             Fields: "MediaStreams",
+            SortBy: "Random",
         },
     })).data;
     return {
-        isEnd: (result === null || result === void 0 ? void 0 : result.TotalRecordCount) <= page * pageSize,
+        isEnd: (result === null || result === void 0 ? void 0 : result.TotalRecordCount) <= page * size,
         data: (_b = (_a = result === null || result === void 0 ? void 0 : result.Items) === null || _a === void 0 ? void 0 : _a.map) === null || _b === void 0 ? void 0 : _b.call(_a, formatMusicItem),
     };
 }
 async function getTopLists() {
     getClient();
     const data = {
-        title: "全部歌曲",
+        title: "分页",
         data: [
             {
                 title: "全部",
@@ -73,13 +73,13 @@ async function getTopLists() {
 async function getTopListDetail(topListItem, page) {
     const searchResult = await searchMusic(null, page);
     return {
-        isEnd: searchResult.isEnd,
+        isEnd: true,
         musicList: searchResult === null || searchResult === void 0 ? void 0 : searchResult.data,
     };
 }
 module.exports = {
     platform: "Jellyfin",
-    version: "0.0.2",
+    version: "0.0.3",
     author: "yzccz",
     srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/jellyfin/index.js",
     userVariables: [

@@ -6,8 +6,6 @@ interface ICachedData {
   mediaId?: string;
 }
 
-const pageSize = 20;
-
 const cachedData: ICachedData = {};
 
 function getClient() {
@@ -41,7 +39,7 @@ function formatMusicItem(it) {
   };
 }
 
-async function searchMusic(query, page): Promise<any> {
+async function searchMusic(query, page, size = 100): Promise<any> {
   const client = getClient();
   if (!client) {
     return { isEnd: true, data: [] };
@@ -55,19 +53,20 @@ async function searchMusic(query, page): Promise<any> {
         ApiKey: apiKey,
         IncludeItemTypes: "Audio",
         Recursive: true,
-        StartIndex: (page - 1) * pageSize,
+        StartIndex: (page - 1) * size,
         ImageTypeLimit: 1,
         EnableImageTypes: "Primary",
-        Limit: pageSize,
+        Limit: size,
         ParentId: mediaId || null,
         searchTerm: query || null,
         Fields: "MediaStreams",
+        SortBy: "Random",
       },
     })
   ).data;
 
   return {
-    isEnd: result?.TotalRecordCount <= page * pageSize,
+    isEnd: result?.TotalRecordCount <= page * size,
     data: result?.Items?.map?.(formatMusicItem),
   };
 }
@@ -75,7 +74,7 @@ async function searchMusic(query, page): Promise<any> {
 async function getTopLists() {
   getClient();
   const data = {
-    title: "全部歌曲",
+    title: "分页",
     data: [
       {
         title: "全部",
@@ -89,14 +88,15 @@ async function getTopLists() {
 async function getTopListDetail(topListItem: IMusicSheet.IMusicSheetItem, page: number) {
   const searchResult = await searchMusic(null, page);
   return {
-    isEnd: searchResult.isEnd,
+    // isEnd: searchResult.isEnd,
+    isEnd: true,
     musicList: searchResult?.data,
   };
 }
 
 module.exports = {
   platform: "Jellyfin",
-  version: "0.0.2",
+  version: "0.0.3",
   author: "yzccz",
   srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/jellyfin/index.js",
   userVariables: [
