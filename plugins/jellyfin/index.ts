@@ -34,6 +34,10 @@ function formatMusicItem(it) {
     artwork: it?.ImageTags?.Primary
       ? `${url}/Items/${it.Id}/Images/Primary?fillHeight=361&fillWidth=361&quality=96&tag=${it.ImageTags.Primary}`
       : null,
+    duration: it.RunTimeTicks / 10000000,
+    custom: {
+      type: it.MediaStreams?.filter((t) => t.Type === "Audio")?.[0]?.Codec || "mp3",
+    },
   };
 }
 
@@ -57,6 +61,7 @@ async function searchMusic(query, page): Promise<any> {
         Limit: pageSize,
         ParentId: mediaId || null,
         searchTerm: query || null,
+        Fields: "MediaStreams",
       },
     })
   ).data;
@@ -81,15 +86,17 @@ async function getTopLists() {
   return [data];
 }
 
-async function getTopListDetail(topListItem: IMusicSheet.IMusicSheetItem) {
+async function getTopListDetail(topListItem: IMusicSheet.IMusicSheetItem, page: number) {
+  const searchResult = await searchMusic(null, page);
   return {
-    musicList: (await searchMusic(null, 1))?.data,
+    isEnd: searchResult.isEnd,
+    musicList: searchResult?.data,
   };
 }
 
 module.exports = {
   platform: "Jellyfin",
-  version: "0.0.1",
+  version: "0.0.2",
   author: "yzccz",
   srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/jellyfin/index.js",
   userVariables: [
@@ -121,7 +128,7 @@ module.exports = {
     return {
       url:
         quality == "super"
-          ? `${client?.url}/Audio/${musicItem.id}/stream?ApiKey=${client?.apiKey}&static=true`
+          ? `${client?.url}/Audio/${musicItem.id}/stream.${musicItem.custom?.type}?ApiKey=${client?.apiKey}&static=true`
           : `${client?.url}/Audio/${musicItem.id}/stream.mp3?ApiKey=${client?.apiKey}`,
     };
   },

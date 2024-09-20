@@ -78,47 +78,47 @@ async function getTopListDetail(topListItem) {
     };
 }
 module.exports = {
-  platform: "WebDAV",
-  author: "猫头猫",
-  description: "使用此插件前先配置用户变量",
-  userVariables: [
-    {
-      key: "url",
-      name: "WebDAV地址",
+    platform: "WebDAV",
+    author: "猫头猫",
+    description: "使用此插件前先配置用户变量",
+    userVariables: [
+        {
+            key: "url",
+            name: "WebDAV地址",
+        },
+        {
+            key: "username",
+            name: "用户名",
+        },
+        {
+            key: "password",
+            name: "密码",
+            type: "password",
+        },
+        {
+            key: "searchPath",
+            name: "存放歌曲的路径",
+        },
+        {
+            key: "recrusive",
+            name: "是否递归查找音乐文件(需要webdav服务器支持)",
+        },
+    ],
+    version: "0.0.3",
+    supportedSearchType: ["music"],
+    srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/webdav/index.js",
+    cacheControl: "no-cache",
+    search(query, page, type) {
+        if (type === "music") {
+            return searchMusic(query);
+        }
     },
-    {
-      key: "username",
-      name: "用户名",
+    getTopLists,
+    getTopListDetail,
+    getMediaSource(musicItem) {
+        const client = getClient();
+        return {
+            url: client.getFileDownloadLink(musicItem.id),
+        };
     },
-    {
-      key: "password",
-      name: "密码",
-      type: "password",
-    },
-    {
-      key: "searchPath",
-      name: "存放歌曲的路径",
-    },
-    {
-      key: "recrusive",
-      name: "是否递归查找音乐文件(需要webdav服务器支持)",
-    },
-  ],
-  version: "0.0.3",
-  supportedSearchType: ["music"],
-  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/webdav/index.js",
-  cacheControl: "no-cache",
-  search(query, page, type) {
-    if (type === "music") {
-      return searchMusic(query);
-    }
-  },
-  getTopLists,
-  getTopListDetail,
-  getMediaSource(musicItem) {
-    const client = getClient();
-    return {
-      url: client.getFileDownloadLink(musicItem.id),
-    };
-  },
 };

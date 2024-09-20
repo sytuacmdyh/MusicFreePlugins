@@ -15,7 +15,7 @@ function getClient() {
     return cachedData;
 }
 function formatMusicItem(it) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e, _f;
     const url = (_a = getClient()) === null || _a === void 0 ? void 0 : _a.url;
     return {
         id: it.Id,
@@ -25,6 +25,10 @@ function formatMusicItem(it) {
         artwork: ((_c = it === null || it === void 0 ? void 0 : it.ImageTags) === null || _c === void 0 ? void 0 : _c.Primary)
             ? `${url}/Items/${it.Id}/Images/Primary?fillHeight=361&fillWidth=361&quality=96&tag=${it.ImageTags.Primary}`
             : null,
+        duration: it.RunTimeTicks / 10000000,
+        custom: {
+            type: ((_f = (_e = (_d = it.MediaStreams) === null || _d === void 0 ? void 0 : _d.filter((t) => t.Type === "Audio")) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.Codec) || "mp3",
+        },
     };
 }
 async function searchMusic(query, page) {
@@ -45,6 +49,7 @@ async function searchMusic(query, page) {
             Limit: pageSize,
             ParentId: mediaId || null,
             searchTerm: query || null,
+            Fields: "MediaStreams",
         },
     })).data;
     return {
@@ -65,52 +70,49 @@ async function getTopLists() {
     };
     return [data];
 }
-async function getTopListDetail(topListItem) {
-    var _a;
+async function getTopListDetail(topListItem, page) {
+    const searchResult = await searchMusic(null, page);
     return {
-        musicList: (_a = (await searchMusic(null, 1))) === null || _a === void 0 ? void 0 : _a.data,
+        isEnd: searchResult.isEnd,
+        musicList: searchResult === null || searchResult === void 0 ? void 0 : searchResult.data,
     };
 }
 module.exports = {
-  platform: "Jellyfin",
-  version: "0.0.1",
-  author: "yzccz",
-  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/jellyfin/index.js",
-  userVariables: [
-    {
-      key: "url",
-      name: "服务器地址(http://host:port)",
+    platform: "Jellyfin",
+    version: "0.0.2",
+    author: "yzccz",
+    srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/jellyfin/index.js",
+    userVariables: [
+        {
+            key: "url",
+            name: "服务器地址(http://host:port)",
+        },
+        {
+            key: "apiKey",
+            name: "token(在Jellyfin管理后台创建)",
+            type: "password",
+        },
+        {
+            key: "mediaId",
+            name: "音乐媒体ID(非必填)",
+        },
+    ],
+    cacheControl: "no-cache",
+    supportedSearchType: ["music"],
+    getTopLists,
+    getTopListDetail,
+    async search(query, page, type) {
+        if (type === "music") {
+            return await searchMusic(query, page);
+        }
     },
-    {
-      key: "apiKey",
-      name: "token(在Jellyfin管理后台创建)",
-      type: "password",
+    async getMediaSource(musicItem, quality) {
+        var _a;
+        const client = getClient();
+        return {
+            url: quality == "super"
+                ? `${client === null || client === void 0 ? void 0 : client.url}/Audio/${musicItem.id}/stream.${(_a = musicItem.custom) === null || _a === void 0 ? void 0 : _a.type}?ApiKey=${client === null || client === void 0 ? void 0 : client.apiKey}&static=true`
+                : `${client === null || client === void 0 ? void 0 : client.url}/Audio/${musicItem.id}/stream.mp3?ApiKey=${client === null || client === void 0 ? void 0 : client.apiKey}`,
+        };
     },
-    {
-      key: "mediaId",
-      name: "音乐媒体ID(非必填)",
-    },
-  ],
-  cacheControl: "no-cache",
-  supportedSearchType: ["music"],
-  getTopLists,
-  getTopListDetail,
-  async search(query, page, type) {
-    if (type === "music") {
-      return await searchMusic(query, page);
-    }
-  },
-  async getMediaSource(musicItem, quality) {
-    const client = getClient();
-    return {
-      url:
-        quality == "super"
-          ? `${client === null || client === void 0 ? void 0 : client.url}/Audio/${musicItem.id}/stream?ApiKey=${
-              client === null || client === void 0 ? void 0 : client.apiKey
-            }&static=true`
-          : `${client === null || client === void 0 ? void 0 : client.url}/Audio/${musicItem.id}/stream.mp3?ApiKey=${
-              client === null || client === void 0 ? void 0 : client.apiKey
-            }`,
-    };
-  },
 };

@@ -80,13 +80,13 @@ async function getLyric(musicItem) {
     };
 }
 module.exports = {
-  platform: "suno",
-  version: "0.0.0",
-  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/suno/index.js",
-  cacheControl: "no-cache",
-  getTopLists,
-  getTopListDetail,
-  getLyric,
+    platform: "suno",
+    version: "0.0.0",
+    srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/suno/index.js",
+    cacheControl: "no-cache",
+    getTopLists,
+    getTopListDetail,
+    getLyric,
 };
 getTopListDetail({
     id: "1ac7823f-8faf-474f-b14c-e4f7c7bb373f",

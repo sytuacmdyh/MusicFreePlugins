@@ -82,56 +82,56 @@ async function getAlbumInfo(albumItem) {
     };
 }
 module.exports = {
-  platform: "Navidrome",
-  version: "0.0.0",
-  author: "猫头猫",
-  appVersion: ">0.1.0-alpha.0",
-  srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/navidrome/index.js",
-  cacheControl: "no-cache",
-  userVariables: [
-    {
-      key: "url",
-      name: "服务器地址",
+    platform: "Navidrome",
+    version: "0.0.0",
+    author: "猫头猫",
+    appVersion: ">0.1.0-alpha.0",
+    srcUrl: "https://github.com/sytuacmdyh/MusicFreePlugins/raw/master/dist/navidrome/index.js",
+    cacheControl: "no-cache",
+    userVariables: [
+        {
+            key: "url",
+            name: "服务器地址",
+        },
+        {
+            key: "username",
+            name: "用户名",
+        },
+        {
+            key: "password",
+            name: "密码",
+        },
+    ],
+    supportedSearchType: ["music", "album"],
+    async search(query, page, type) {
+        if (type === "music") {
+            return await searchMusic(query, page);
+        }
+        if (type === "album") {
+            return await searchAlbum(query, page);
+        }
     },
-    {
-      key: "username",
-      name: "用户名",
+    async getMediaSource(musicItem) {
+        var _a;
+        const userVariables = (_a = env === null || env === void 0 ? void 0 : env.getUserVariables()) !== null && _a !== void 0 ? _a : {};
+        let { url, username, password } = userVariables;
+        if (!(url && username && password)) {
+            return null;
+        }
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = `http://${url}`;
+        }
+        const salt = Math.random().toString(16).slice(2);
+        const urlObj = new URL(`${url}/rest/stream`);
+        urlObj.searchParams.append("u", username);
+        urlObj.searchParams.append("s", salt);
+        urlObj.searchParams.append("t", CryptoJs.MD5(`${password}${salt}`).toString(CryptoJs.enc.Hex));
+        urlObj.searchParams.append("c", "MusicFree");
+        urlObj.searchParams.append("v", "1.14.1");
+        urlObj.searchParams.append("f", "json");
+        urlObj.searchParams.append("id", musicItem.id);
+        return {
+            url: urlObj.toString(),
+        };
     },
-    {
-      key: "password",
-      name: "密码",
-    },
-  ],
-  supportedSearchType: ["music", "album"],
-  async search(query, page, type) {
-    if (type === "music") {
-      return await searchMusic(query, page);
-    }
-    if (type === "album") {
-      return await searchAlbum(query, page);
-    }
-  },
-  async getMediaSource(musicItem) {
-    var _a;
-    const userVariables = (_a = env === null || env === void 0 ? void 0 : env.getUserVariables()) !== null && _a !== void 0 ? _a : {};
-    let { url, username, password } = userVariables;
-    if (!(url && username && password)) {
-      return null;
-    }
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      url = `http://${url}`;
-    }
-    const salt = Math.random().toString(16).slice(2);
-    const urlObj = new URL(`${url}/rest/stream`);
-    urlObj.searchParams.append("u", username);
-    urlObj.searchParams.append("s", salt);
-    urlObj.searchParams.append("t", CryptoJs.MD5(`${password}${salt}`).toString(CryptoJs.enc.Hex));
-    urlObj.searchParams.append("c", "MusicFree");
-    urlObj.searchParams.append("v", "1.14.1");
-    urlObj.searchParams.append("f", "json");
-    urlObj.searchParams.append("id", musicItem.id);
-    return {
-      url: urlObj.toString(),
-    };
-  },
 };
